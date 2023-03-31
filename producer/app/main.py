@@ -57,6 +57,9 @@ async def kafka_produce(data: SensorReading):
         from the request.
     """
 
+    print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+    print(data.dict())
+    print('########################################################')
     # Extract the messageId, deviceId, and sessionId
     message_info = data.dict().copy()
     message_info.pop('payload')
@@ -67,7 +70,7 @@ async def kafka_produce(data: SensorReading):
         kafka_message = {**flatten_dict(sensor_reading), **message_info}
         await producer.send(app_config.TOPIC_NAME, json.dumps(kafka_message).encode("ascii"))
 
-        print(kafka_message)
+        #print(kafka_message)
 
     response = SensorResponse(
         messageId=data.messageId,

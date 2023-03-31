@@ -40,6 +40,7 @@ services:
       KSQL_BOOTSTRAP_SERVERS: kafka:9092
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
+      KSQL_KSQL_STREAMS_COMMIT_INTERVAL_MS: 100
 
   ksqldb-cli:
     image: confluentinc/ksqldb-cli:latest
