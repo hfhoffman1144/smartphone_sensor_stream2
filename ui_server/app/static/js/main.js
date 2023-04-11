@@ -9,11 +9,10 @@ $(document).ready(function() {
 
         // Parse event data
         const data = JSON.parse(event.data);
-        console.log(data);
 
         // Unpack elements in the message
         id = data[0];
-        time = data[1];
+        time = data[1].slice(10, 22);
         x = data[2];
         y = data[3];
         z = data[4];
@@ -26,8 +25,10 @@ $(document).ready(function() {
             currentChartConfigs[id].data.datasets[1].data.push(y);
             currentChartConfigs[id].data.datasets[2].data.push(z);
 
+            currentChartConfigs[id].options.title.text = 'Accelerometer Signal for Device: ' + id.slice(0, 5) + '\n Last Recorded Time: ' + time;
+
             // Remove the first elemnt of the array if they array is longer than 100
-            if (currentChartConfigs[id].data.labels.length > 100) {
+            if (currentChartConfigs[id].data.labels.length > 50) {
 
                 currentChartConfigs[id].data.labels.shift();
                 currentChartConfigs[id].data.datasets[0].data.shift();
@@ -82,7 +83,7 @@ $(document).ready(function() {
                 responsive: true,
                 title: {
                     display: true,
-                    text: 'Accelerometer signal for ' + id
+                    text: 'Accelerometer Signal for ' + id.slice(0, 5) + '. Last Recorded Time: ' + time
                 },
                 tooltips: {
                     mode: 'index',
@@ -105,6 +106,10 @@ $(document).ready(function() {
                         scaleLabel: {
                             display: true,
                             labelString: 'Value'
+                        },
+                        ticks: {
+                            min: -2.5,
+                            max: 2.5
                         }
                     }]
                 }
@@ -115,12 +120,17 @@ $(document).ready(function() {
 
     }
 
-    const source = new EventSource("http://127.0.0.1:5000/chart-data");
 
-    source.addEventListener("new_message", function(event) {
+    var ws = new WebSocket("ws://127.0.0.1:5000/chart-data");
+    ws.onmessage = function(event) {
 
         createDeviceCharts(event);
 
-    });
+    };
+
+
+
+
+
 
 });
