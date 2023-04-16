@@ -2,16 +2,16 @@ import pandas as pd
 import json
 import logging
 import sys
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI
+from sse_starlette.sse import EventSourceResponse
 from fastapi.requests import Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
 from core.config import app_config
 from models.sensors import SensorName
 from ksql import KSQLAPI
 from db.data_api import ksql_sensor_push
+import asyncio
 
 KSQL_CLIENT = KSQLAPI('http://localhost:8088/')
 
@@ -19,11 +19,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(asctime)s %
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
-origins = [
-   f"http://localhost:{app_config.UI_PORT}",
-   f"http://127.0.0.1:{app_config.UI_PORT}",
-   f"http://0.0.0.0:{app_config.UI_PORT}"
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,22 +29,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
-templates = Jinja2Templates(directory="templates")
+
+@app.get("/chart-data/{client_id}")
+async def message_stream(request: Request, client_id:str):
+    async def event_generator():
+        while True:
+            # If client closes connection, stop sending events
+            if await request.is_disconnected():
+                break
+
+            
+            yield {
+                        "event": "new_message",
+                        "id": "message_id",
+                        "retry":1500000,
+                        "data": f'yeah boi {client_id}'
+                }
+
+            await asyncio.sleep(1)
+
+    return EventSourceResponse(event_generator())
     
-@app.get("/", response_class=HTMLResponse)
-async def index(request: Request) -> templates.TemplateResponse:
-    return templates.TemplateResponse("index.html", {"request": request})
-
-@app.websocket("/chart-data")
-async def chart_data_endpoint(websocket: WebSocket):
-
-    await websocket.accept()
-
-    while True:
-        
-        try:
-            await ksql_sensor_push(KSQL_CLIENT, SensorName.ACC, websocket.send_json)
-        except:
-            continue

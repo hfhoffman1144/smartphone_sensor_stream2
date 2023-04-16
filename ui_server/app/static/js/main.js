@@ -121,15 +121,17 @@ $(document).ready(function() {
     }
 
 
-    var ws = new WebSocket("ws://127.0.0.1:5000/chart-data");
-    ws.onmessage = function(event) {
 
-        createDeviceCharts(event);
+    var client_id = Date.now()
 
-    };
+    // Open SSE connection
+    const eventSource = new EventSource(`http://127.0.0.1:5000/chart-data/${client_id}`);
 
+    eventSource.addEventListener("new_message", function(event) {
 
+        console.log(eventSource);
 
+    });
 
 
 
