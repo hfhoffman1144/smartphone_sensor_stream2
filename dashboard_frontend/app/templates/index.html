@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Real-Time Charts from QuestDB and FastAPI</title>
+    <title>Real-Time Charts from KSQLDB and FastAPI</title>
     <!--suppress JSUnresolvedLibraryURL -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css" integrity="sha512-T584yQ/tdRR5QwOpfvDfVQUidzfgc2339Lc8uBDtcp/wYu80d7jwBgAxbyMh0a9YM9F8N3tdErpFI8iaGx6x5g==" crossorigin="anonymous" referrerpolicy="no-referrer"
     />
@@ -15,13 +15,16 @@
 <body>
     <div class="container" id="main-container">
         <div class='row'>
-            <div class='col-md-8'>
+            <div class='col-md-6'>
                 <h3>Device Streams</h3>
-                <h5><button id="start_stream">Start Streaming</button></h5>
-                <h5><button id="stop_stream">Stop Streaming</button></h5>
+                <h5><button id="toggleStream">Start Streaming</button></h5>
             </div>
         </div>
     </div>
+    <script>
+        const HOST = "{{ UI_BACKEND_HOST }}"
+        const PORT = "{{ UI_BACKEND_PORT }}";
+    </script>
     <!--suppress JSUnresolvedLibraryURL -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!--suppress JSUnresolvedLibraryURL -->

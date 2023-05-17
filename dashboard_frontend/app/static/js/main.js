@@ -25,7 +25,9 @@ $(document).ready(function() {
             currentChartConfigs[id].data.datasets[1].data.push(y);
             currentChartConfigs[id].data.datasets[2].data.push(z);
 
-            currentChartConfigs[id].options.title.text = 'Accelerometer Signal for Device: ' + id.slice(0, 5) + '\n Last Recorded Time: ' + time;
+            currentChartConfigs[id].options.title.text = ['Accelerometer Signal for Device: ' + id.slice(0, 5),
+                'Last Recorded Time: ' + time
+            ];
 
             // Remove the first elemnt of the array if they array is longer than 100
             if (currentChartConfigs[id].data.labels.length > 50) {
@@ -120,19 +122,33 @@ $(document).ready(function() {
 
     }
 
+    const sseBtn = document.getElementById('toggleStream');
+    let eventSource;
 
+    sseBtn.addEventListener('click', function() {
+        if (!eventSource) {
 
-    var client_id = Date.now()
+            // Create new client ID
+            var client_id = Date.now()
 
-    // Open SSE connection
-    const eventSource = new EventSource(`http://127.0.0.1:5000/chart-data/${client_id}`);
+            // Open SSE connection
+            eventSource = new EventSource(`${HOST}:${PORT}/chart-data/${client_id}`);
 
-    eventSource.addEventListener("new_message", function(event) {
+            eventSource.addEventListener("new_message", function(event) {
 
-        console.log(eventSource);
+                createDeviceCharts(event);
+
+            });
+            sseBtn.textContent = 'Stop Streaming';
+        } else {
+
+            // Close SSE connection
+            eventSource.close();
+            eventSource = null;
+            sseBtn.textContent = 'Start Streaming';
+        }
 
     });
-
 
 
 });

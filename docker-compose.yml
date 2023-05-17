@@ -64,3 +64,27 @@ services:
     depends_on:
       - kafka
       - zookeeper
+
+  dashboard_backend:
+    build:
+      context: ./dashboard_backend
+      dockerfile: Dockerfile
+    command: uvicorn main:app --workers 1 --host 0.0.0.0 --port 5000
+    ports:
+      - 5000:5000
+    env_file:
+      - .env
+    depends_on:
+      - ksqldb-server
+
+  dashboard_frontend:
+    build:
+      context: ./dashboard_frontend
+      dockerfile: Dockerfile
+    command: uvicorn main:app --workers 1 --host 0.0.0.0 --port 4200
+    ports:
+      - 4200:4200
+    env_file:
+      - .env
+    depends_on:
+      - dashboard_backend
