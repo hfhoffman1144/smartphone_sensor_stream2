@@ -2,6 +2,8 @@
 
 ![image info](./ksql_dashboard_stream.gif)
 
+![image info](./double_phone_stream.gif)
+
 Stream smartphone data from Sensor Logger (see https://github.com/tszheichoi/awesome-sensor-logger#the-sensor-logger-app) with FastAPI, Kafka, ksqlDB, and Docker. A quick demo is available on YouTube: https://www.youtube.com/shorts/zRUVvz5vsl8
 
 ## Getting Started
